@@ -35,6 +35,9 @@ import java.io.*;
 class PortWatcher implements Runnable{
   private static java.util.Vector pool=new java.util.Vector();
   private static InetAddress anyLocalAddress=null;
+
+  public PortWatcherConfig config;
+
   static{
     // 0.0.0.0
 /*
@@ -137,21 +140,22 @@ class PortWatcher implements Runnable{
       }
     }
   }
-  PortWatcher(Session session, 
-	      String address, int lport, 
-	      String host, int rport,
-              ServerSocketFactory factory) throws JSchException{
+
+  PortWatcher(Session session,
+              String address, int lport,
+              String host, int rport,
+              ServerSocketFactory factory, PortWatcherConfig config) throws JSchException {
     this.session=session;
     this.lport=lport;
     this.host=host;
     this.rport=rport;
     try{
       boundaddress=InetAddress.getByName(address);
-      ss=(factory==null) ? 
-        new ServerSocket(lport, 0, boundaddress) :
-        factory.createServerSocket(lport, 0, boundaddress);
+      ss=(factory==null) ?
+              new ServerSocket(lport, 0, boundaddress) :
+              factory.createServerSocket(lport, 0, boundaddress);
     }
-    catch(Exception e){ 
+    catch(Exception e){
       //System.err.println(e);
       String message="PortForwardingL: local port "+address+":"+lport+" cannot be bound.";
       if(e instanceof Throwable)
@@ -163,6 +167,15 @@ class PortWatcher implements Runnable{
       if(assigned!=-1)
         this.lport=assigned;
     }
+
+    this.config = config;
+  }
+
+  PortWatcher(Session session,
+	      String address, int lport, 
+	      String host, int rport,
+              ServerSocketFactory factory) throws JSchException{
+    this(session, address, lport, host, rport, factory, null);
   }
 
   public void run(){
@@ -170,10 +183,10 @@ class PortWatcher implements Runnable{
     try{
       while(thread!=null){
         Socket socket=ss.accept();
-	socket.setTcpNoDelay(true);
+	    socket.setTcpNoDelay(true);
         InputStream in=socket.getInputStream();
         OutputStream out=socket.getOutputStream();
-        ChannelDirectTCPIP channel=new ChannelDirectTCPIP();
+        ChannelDirectTCPIP channel = this.config != null ? new ChannelDirectTCPIP(this.config.windowSize, this.config.maxWindowSize, this.config.maxPacketSize) : new ChannelDirectTCPIP();
         channel.init();
         channel.setInputStream(in);
         channel.setOutputStream(out);
