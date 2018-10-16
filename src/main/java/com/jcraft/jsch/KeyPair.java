@@ -635,7 +635,7 @@ public abstract class KeyPair{
         if(buf[i]=='B'&& i+3<len && buf[i+1]=='E'&& buf[i+2]=='G'&& buf[i+3]=='I'){
           i+=6;
           if(i+2 >= len)
-	    throw new JSchException("invalid privatekey: "+ Arrays.toString(prvkey));
+	    throw new JSchException("invalid privatekey");
           if(buf[i]=='D'&& buf[i+1]=='S'&& buf[i+2]=='A'){ type=DSA; }
 	  else if(buf[i]=='R'&& buf[i+1]=='S'&& buf[i+2]=='A'){ type=RSA; }
 	  else if(buf[i]=='E'&& buf[i+1]=='C'){ type=ECDSA; }
@@ -662,7 +662,7 @@ public abstract class KeyPair{
             i+=5;
 	  }
 	  else{
-	    throw new JSchException("invalid privatekey: "+ Arrays.toString(prvkey));
+	    throw new JSchException("invalid privatekey");
 	  }
           i+=3;
 	  continue;
@@ -677,7 +677,7 @@ public abstract class KeyPair{
             iv=new byte[cipher.getIVSize()];
           }
           else{
-            throw new JSchException("privatekey: aes256-cbc is not available "+ Arrays.toString(prvkey));
+            throw new JSchException("privatekey: aes256-cbc is not available");
           }
           continue;
         }
@@ -691,7 +691,7 @@ public abstract class KeyPair{
             iv=new byte[cipher.getIVSize()];
           }
           else{
-            throw new JSchException("privatekey: aes192-cbc is not available "+ Arrays.toString(prvkey));
+            throw new JSchException("privatekey: aes192-cbc is not available");
           }
           continue;
         }
@@ -705,7 +705,7 @@ public abstract class KeyPair{
             iv=new byte[cipher.getIVSize()];
           }
           else{
-            throw new JSchException("privatekey: aes128-cbc is not available "+ Arrays.toString(prvkey));
+            throw new JSchException("privatekey: aes128-cbc is not available");
           }
           continue;
         }
@@ -745,7 +745,7 @@ public abstract class KeyPair{
       if(buf!=null){
 
         if(type==ERROR){
-          throw new JSchException("invalid privatekey: "+ Arrays.toString(prvkey));
+          throw new JSchException("invalid privatekey");
         }
 
         int start = i;
@@ -755,7 +755,7 @@ public abstract class KeyPair{
         }
 
         if((len-i) == 0 || (i-start) == 0){
-          throw new JSchException("invalid privatekey: "+ Arrays.toString(prvkey));
+          throw new JSchException("invalid privatekey");
         }
 
         // The content of 'buf' will be changed, so it should be copied.
@@ -806,7 +806,7 @@ public abstract class KeyPair{
 	   _buf.getByte(foo);
 	   data=foo;
 	   encrypted=true;
-	   throw new JSchException("unknown privatekey format: "+ Arrays.toString(prvkey));
+	   throw new JSchException("unknown privatekey format");
 	}
 	else if(_cipher.equals("none")){
   	   _buf.getInt();
@@ -946,7 +946,7 @@ public abstract class KeyPair{
 	  return kpair;
 	}
 	else{
-	  throw new JSchException("invalid privatekey: "+ Arrays.toString(prvkey));
+	  throw new JSchException("invalid privatekey");
 	}
       }
     }
