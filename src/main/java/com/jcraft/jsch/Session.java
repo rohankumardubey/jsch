@@ -29,8 +29,11 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package com.jcraft.jsch;
 
-import java.io.*;
-import java.net.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InterruptedIOException;
+import java.io.OutputStream;
+import java.net.Socket;
 import java.util.Vector;
 
 public class Session implements Runnable{
@@ -1782,14 +1785,14 @@ break;
   /**
    * Registers the local port forwarding for loop-back interface.
    * If <code>lport</code> is <code>0</code>, the tcp port will be allocated.
-   * @param lport local port for local port forwarding 
+   * @param lport local port for local port forwarding
    * @param host host address for local port forwarding
    * @param rport remote port number for local port forwarding
    * @return an allocated local TCP port number
-   * @see #setPortForwardingL(String bind_address, int lport, String host, int rport, ServerSocketFactory ssf, int connectTimeout)
+   * @see #setPortForwardingL(String bind_address, int lport, String host, int rport, ServerSocketFactory ssf, int connectTimeout, PortWatcherConfig config)
    */
-  public int setPortForwardingL(int lport, String host, int rport) throws JSchException{
-    return setPortForwardingL("127.0.0.1", lport, host, rport);
+  public int setPortForwardingL(int lport, String host, int rport, PortWatcherConfig config) throws JSchException{
+    return setPortForwardingL("127.0.0.1", lport, host, rport, config);
   }
 
   /**
@@ -1803,10 +1806,10 @@ break;
    * @param host host address for local port forwarding
    * @param rport remote port number for local port forwarding
    * @return an allocated local TCP port number
-   * @see #setPortForwardingL(String bind_address, int lport, String host, int rport, ServerSocketFactory ssf, int connectTimeout)
+   * @see #setPortForwardingL(String bind_address, int lport, String host, int rport, ServerSocketFactory ssf, int connectTimeout, PortWatcherConfig config)
    */
-  public int setPortForwardingL(String bind_address, int lport, String host, int rport) throws JSchException{
-    return setPortForwardingL(bind_address, lport, host, rport, null);
+  public int setPortForwardingL(String bind_address, int lport, String host, int rport, PortWatcherConfig config) throws JSchException{
+    return setPortForwardingL(bind_address, lport, host, rport, null, config);
   }
 
   /**
@@ -1822,10 +1825,10 @@ break;
    * @param rport remote port number for local port forwarding
    * @param ssf socket factory
    * @return an allocated local TCP port number
-   * @see #setPortForwardingL(String bind_address, int lport, String host, int rport, ServerSocketFactory ssf, int connectTimeout)
+   * @see #setPortForwardingL(String bind_address, int lport, String host, int rport, ServerSocketFactory ssf, int connectTimeout, PortWatcherConfig config)
    */
-  public int setPortForwardingL(String bind_address, int lport, String host, int rport, ServerSocketFactory ssf) throws JSchException{
-    return setPortForwardingL(bind_address, lport, host, rport, ssf, 0);
+  public int setPortForwardingL(String bind_address, int lport, String host, int rport, ServerSocketFactory ssf, PortWatcherConfig config) throws JSchException{
+    return setPortForwardingL(bind_address, lport, host, rport, ssf, 0, config);
   }
 
   /**
@@ -1843,9 +1846,10 @@ break;
    * @param connectTimeout timeout for establishing port connection
    * @return an allocated local TCP port number 
    */
-  public int setPortForwardingL(String bind_address, int lport, String host, int rport, ServerSocketFactory ssf, int connectTimeout) throws JSchException{
-    PortWatcher pw=PortWatcher.addPort(this, bind_address, lport, host, rport, ssf);
+  public int setPortForwardingL(String bind_address, int lport, String host, int rport, ServerSocketFactory ssf, int connectTimeout, PortWatcherConfig config) throws JSchException{
+    PortWatcher pw=PortWatcher.addPort(this, bind_address, lport, host, rport, ssf, config);
     pw.setConnectTimeout(connectTimeout);
+
     Thread tmp=new Thread(pw);
     tmp.setName("PortWatcher Thread for "+host);
     if(daemon_thread){
@@ -2089,11 +2093,11 @@ break;
    *
    * @param conf configuration of local port forwarding
    * @return an assigned port number
-   * @see #setPortForwardingL(String bind_address, int lport, String host, int rport)
+   * @see #setPortForwardingL(String bind_address, int lport, String host, int rport, PortWatcherConfig config)
    */
   public int setPortForwardingL(String conf) throws JSchException {
     Forwarding f = parseForwarding(conf);
-    return setPortForwardingL(f.bind_address, f.port, f.host, f.hostport);
+    return setPortForwardingL(f.bind_address, f.port, f.host, f.hostport, null);
   }
 
   /**
