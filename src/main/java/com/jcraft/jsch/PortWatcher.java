@@ -176,7 +176,7 @@ class PortWatcher implements Runnable{
     try{
       while(thread!=null){
         Socket socket=ss.accept();
-	    socket.setTcpNoDelay(true);
+	    socket.setTcpNoDelay(config != null ?  config.noDelay : true);
         InputStream in=socket.getInputStream();
         OutputStream out=socket.getOutputStream();
         ChannelDirectTCPIP channel = this.config != null ? new ChannelDirectTCPIP(this.config.windowSize, this.config.maxWindowSize, this.config.maxPacketSize) : new ChannelDirectTCPIP();
