@@ -1809,7 +1809,7 @@ break;
    * @see #setPortForwardingL(String bind_address, int lport, String host, int rport, ServerSocketFactory ssf, int connectTimeout, PortWatcherConfig config)
    */
   public int setPortForwardingL(String bind_address, int lport, String host, int rport, PortWatcherConfig config) throws JSchException{
-    return setPortForwardingL(bind_address, lport, host, rport, null, null);
+    return setPortForwardingL(bind_address, lport, host, rport, null, config);
   }
 
   /**
@@ -1828,7 +1828,7 @@ break;
    * @see #setPortForwardingL(String bind_address, int lport, String host, int rport, ServerSocketFactory ssf, int connectTimeout, PortWatcherConfig config)
    */
   public int setPortForwardingL(String bind_address, int lport, String host, int rport, ServerSocketFactory ssf, PortWatcherConfig config) throws JSchException{
-    return setPortForwardingL(bind_address, lport, host, rport, ssf, 0, null);
+    return setPortForwardingL(bind_address, lport, host, rport, ssf, 0, config);
   }
 
   /**
@@ -1847,7 +1847,7 @@ break;
    * @return an allocated local TCP port number 
    */
   public int setPortForwardingL(String bind_address, int lport, String host, int rport, ServerSocketFactory ssf, int connectTimeout, PortWatcherConfig config) throws JSchException{
-    PortWatcher pw=PortWatcher.addPort(this, bind_address, lport, host, rport, ssf);
+    PortWatcher pw=PortWatcher.addPort(this, bind_address, lport, host, rport, ssf, config);
     pw.setConnectTimeout(connectTimeout);
 
     Thread tmp=new Thread(pw);

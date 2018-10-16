@@ -105,12 +105,12 @@ class PortWatcher implements Runnable{
     }
     return address;
   }
-  static PortWatcher addPort(Session session, String address, int lport, String host, int rport, ServerSocketFactory ssf) throws JSchException{
+  static PortWatcher addPort(Session session, String address, int lport, String host, int rport, ServerSocketFactory ssf, PortWatcherConfig config) throws JSchException{
     address = normalize(address);
     if(getPort(session, address, lport)!=null){
       throw new JSchException("PortForwardingL: local port "+ address+":"+lport+" is already registered.");
     }
-    PortWatcher pw=new PortWatcher(session, address, lport, host, rport, ssf);
+    PortWatcher pw=new PortWatcher(session, address, lport, host, rport, ssf, config);
     pool.addElement(pw);
     return pw;
   }
@@ -169,13 +169,6 @@ class PortWatcher implements Runnable{
     }
 
     this.config = config;
-  }
-
-  PortWatcher(Session session,
-	      String address, int lport, 
-	      String host, int rport,
-              ServerSocketFactory factory) throws JSchException{
-    this(session, address, lport, host, rport, factory, null);
   }
 
   public void run(){
